@@ -1,5 +1,7 @@
 {
   "name": "yt-dlp",
-  "engineVersion": "v0.14.0",
-  "sdk": "python"
+  "engineVersion": "v0.18.10",
+  "sdk": {
+    "source": "python"
+  }
 }

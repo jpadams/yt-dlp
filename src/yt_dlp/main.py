@@ -18,10 +18,15 @@ class YtDlp:
         )
 
     @function
-    def dl(self, url: str, format: str = DEFAULT_FORMAT, name: str = "out.mp4") -> dagger.File:
+    def dl(self, url: str, format: str = DEFAULT_FORMAT, name: str = "out.mp4", sections: str = "") -> dagger.File:
         """Returns a downloaded video File"""
+        cmd = (
+            f"/usr/local/bin/yt-dlp -o {name} -f {format} "
+            f"{'--download-sections ' + sections if sections else ''}"
+            f" --merge-output-format mp4 {url}"
+        )
         return (
             self.base()
-            .with_exec(["bash", "-c", f"/usr/local/bin/yt-dlp -o {name} -f {format} --merge-output-format mp4 {url}"])
+            .with_exec(["bash", "-c", cmd])
             .file(f"/dl/{name}")
         )
