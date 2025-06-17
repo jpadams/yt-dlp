@@ -8,12 +8,22 @@ class YtDlp:
     @function
     def base(self) -> dagger.Container:
         """Returns base yt-dlp Container"""
+        ffmpeg_script = '''ARCH=$(dpkg --print-architecture)
+case "$ARCH" in
+amd64)  A=ffmpeg-master-latest-linux64-gpl.tar.xz ;;
+arm64)  A=ffmpeg-master-latest-linuxarm64-gpl.tar.xz ;;
+*)      echo "Unsupported arch: $ARCH" && exit 1 ;;
+esac
+
+curl -L "https://github.com/yt-dlp/FFmpeg-Builds/releases/latest/download/$A" | tar -xJ --strip-components=2 -C /usr/local/bin --wildcards */ffmpeg */ffprobe'''
+
         return (
             dag.container()
             .from_("python:latest")
             .with_exec(["pip", "install", "yt-dlp"])
             .with_exec(["apt", "update", "-y"])
-            .with_exec(["apt", "install", "ffmpeg", "-y"]) # needed to merge vid+aud
+            .with_exec(["apt", "install", "curl", "xz-utils", "-y"])
+            .with_exec(["bash", "-c", ffmpeg_script])
             .with_workdir("/dl")
         )
 
